@@ -1,5 +1,5 @@
 from urllib2 import Request, urlopen, URLError
-import json
+import json, os
 
 #this script accesses the data and selects the appropriate values
 
@@ -31,7 +31,8 @@ def whichresult():
 				#print result2[-3][u'value']
 				return result2[-4][u'value']
 
-print whichresult()
+if os.environ.get("DEBUG"):
+  print whichresult()
 
 def highorlow():
 	if whichresult()<=35:
@@ -40,4 +41,6 @@ def highorlow():
 		return 'high'
 	else:
 		return 'medium'
-print highorlow()
+
+if os.environ.get("DEBUG"):
+	print highorlow()

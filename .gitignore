@@ -1,3 +1,6 @@
 .git/**
 keys.*
 env.list
+.env
+dev_run_bot.sh
+*.pyc

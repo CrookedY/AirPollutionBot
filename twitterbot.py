@@ -7,11 +7,7 @@ auth = tweepy.OAuthHandler(os.environ['CONSUMER_KEY'], os.environ['CONSUMER_SECR
 auth.set_access_token(os.environ['ACCESS_TOKEN'], os.environ['ACCESS_TOKEN_SECRET'])
 api = tweepy.API(auth)
 
-# airnow = ("The 24hr average concententration of particulate matter below 2.5 um in Devonshire Green now is " + str(whichresult()) + 'ug/m3. This is '+ (highorlowp25())+' #airpollution')
-# if os.environ.get("DEBUG"):
-#   print (airnow)
-
-airnow = ('The air pollution now is '+ (highorlow()) + '. Particulate matter <2.5 =' + str(P2)+ 'ug/m3, NOx concentration = ' + str(NOX) + 'ug/m3 #airpollution')
+airnow = ('The air pollution now is '+ (highorlow()) + '. Particulate matter <2.5 um = ' + str(P2)+ 'ug/m3, Nitrous oxides concentration = ' + str(NOX) + 'ug/m3 #airpollution')
 if os.environ.get("DEBUG"):
   print (airnow)
 

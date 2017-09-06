@@ -19,4 +19,4 @@ if os.environ.get("DEBUG"):
 
 
 if P2 != None and NOX != None:
-    pi.update_status(status=airnow)
+    api.update_status(status=airnow)

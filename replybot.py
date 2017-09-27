@@ -15,8 +15,8 @@ from geopy.distance import vincenty
 geolocator = Nominatim()
 
 
-auth = tweepy.OAuthHandler('', '')
-auth.set_access_token('', '')
+auth = tweepy.OAuthHandler('wA4BLtKEtSEwYZpBo3nU7swL8', 'VydrPUsMcgwbWkdVoktm5MfaZcmle8j72aO7wdF03RW50vkBbv')
+auth.set_access_token('892859700819091456-IoQMfI4Bbk5E7vvNXwt8SWghl9buIq2', 'Pvd8X5lHes4mTeHsGPvaZdk1GxZ18L9WOUpoQBicKh7W0')
 api = tweepy.API(auth)
 
 
@@ -35,17 +35,6 @@ PlaceName = Place.cities[0]
 location = str(PlaceName.translate(string.punctuation)) #needs to be a forloop?
 
 print (PlaceNames)
-
-#stationsspreadsheet = pd.read_csv("liststations.csv")
-listofstations = finallist.loc[ : , "station" ]
-
-# print (listofstations)
-
-placeData = []
-
-BestMatch = process.extractOne(PlaceName, listofstations)
-
-#print(BestMatch)
 
 ###############################################################################
 
@@ -71,8 +60,54 @@ for station in ListofStationCoordinates:
 
 print (shortest_distance_coordinates)
 
+ClosestStation = finallist[finallist.latandlong.isin([shortest_distance_coordinates])]
 
+#print(ClosestStation)
 
+ClosestStationKeys = ClosestStation.loc[:, "ID"]
+
+print(ClosestStationKeys)
+
+##########################################################################
+
+def getValidTimeseriesKey(timerseries_keys, offering_id):
+	invalid_offering = '9999999999'
+	if offering_id == invalid_offering:
+		return timeseries_keys[1]
+	else:
+		return timeseries_keys[0]
+
+def interestingPollutant()
+
+ID=(ClosestStationKeys)
+
+stationdata = {}
+
+for i in ID:
+    url = ('https://uk-air.defra.gov.uk/sos-ukair/api/v1/stations/'+str(i))
+    request2 = Request (url)
+    try:
+    	response = urlopen(request2)
+    	station_data = response.read()
+    except URLError, e:
+        print 'error:', e
+
+    station_prop_json = json.loads (station_data)
+    station_time_series = station_prop_json[u'properties'][u'timeseries']
+    timeseries_keys = (station_time_series.keys())
+    first_timeseries = station_time_series[timeseries_keys[0]]
+    offering_id = first_timeseries[u'offering'][u'id']
+    first_timeserieskey = getValidTimeseriesKey(timeseries_keys, offering_id)
+    url2getdata = ('https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/'+str(first_timeserieskey) +'/getData')
+
+    request_time_series_data = Request(url2getdata)
+    try:
+    	response = urlopen(request_time_series_data)
+    	time_series_data = response.read()
+    except URLError, e:
+        print 'error:', e
+
+    stationdata.update({first_timeserieskey: time_series_data})
 
 
 # for s in tweetslookup:

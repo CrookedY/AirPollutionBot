@@ -15,8 +15,8 @@ from geopy.distance import vincenty
 geolocator = Nominatim()
 
 
-auth = tweepy.OAuthHandler('wA4BLtKEtSEwYZpBo3nU7swL8', 'VydrPUsMcgwbWkdVoktm5MfaZcmle8j72aO7wdF03RW50vkBbv')
-auth.set_access_token('892859700819091456-IoQMfI4Bbk5E7vvNXwt8SWghl9buIq2', 'Pvd8X5lHes4mTeHsGPvaZdk1GxZ18L9WOUpoQBicKh7W0')
+auth = tweepy.OAuthHandler('', '')
+auth.set_access_token('', '')
 api = tweepy.API(auth)
 
 

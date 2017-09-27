@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import tweepy
 import os
@@ -9,6 +10,7 @@ from createlistofstations import finallist
 from geotext import GeoText
 from fuzzywuzzy import process
 from geopy.geocoders import Nominatim
+from geopy.distance import vincenty
 
 geolocator = Nominatim()
 
@@ -25,13 +27,14 @@ searchstrings = ["@shefairpol",
                   ]
 tweetslookup = api.search(q="Sheffield Air Pollution")
 
-# print (tweetslookup[1].text)
+print (tweetslookup[0].text)
 
-Place = GeoText(tweetslookup[0].text)
+Place = GeoText(tweetslookup[1].text)
+PlaceNames = Place.cities
 PlaceName = Place.cities[0]
 location = str(PlaceName.translate(string.punctuation)) #needs to be a forloop?
 
-#print (location)
+print (PlaceNames)
 
 #stationsspreadsheet = pd.read_csv("liststations.csv")
 listofstations = finallist.loc[ : , "station" ]
@@ -48,15 +51,25 @@ BestMatch = process.extractOne(PlaceName, listofstations)
 
 tweetedLocation = geolocator.geocode(location, timeout = None)
 
-LocationCoordinates = (tweetedLocation.latitude, tweetedLocation.longitude)
+LocationCoordinates = (tweetedLocation.longitude,tweetedLocation.latitude)
 
 print (LocationCoordinates)
 
 ListofStationCoordinates = finallist.loc[ : , "latandlong"]
 
-print (ListofStationCoordinates)
+#print (ListofStationCoordinates)
 
-#for i in
+
+shortest_distance = None
+shortest_distance_coordinates = None
+
+for station in ListofStationCoordinates:
+    distance = vincenty(LocationCoordinates, station)
+    if distance < shortest_distance or shortest_distance is None:
+        shortest_distance = distance
+        shortest_distance_coordinates = station
+
+print (shortest_distance_coordinates)
 
 
 

@@ -4,13 +4,12 @@ import tweepy
 import os
 import string
 from createlistofstations import finallist
-#from airpoldata import NOX, P2, highorlow
-# from nltk.tokenize import from nltk.tokenize import sent_tokenize, word_tokenize
-# from nltk.corpus import stopwords
 from geotext import GeoText
 from fuzzywuzzy import process
 from geopy.geocoders import Nominatim
 from geopy.distance import vincenty
+from urllib2 import Request, urlopen, URLError
+import json
 
 geolocator = Nominatim()
 
@@ -77,11 +76,26 @@ def getValidTimeseriesKey(timerseries_keys, offering_id):
 	else:
 		return timeseries_keys[0]
 
-def interestingPollutant()
+requestpoll = Request ('http://dd.eionet.europa.eu/vocabulary/aq/pollutant/json')
+try:
+    response = urlopen(requestpoll)
+    pollutant_prop = response.read()
+except URLError, e:
+    print 'error:', e
+
+json_pollutantlist = json.loads(pollutant_prop)
+jsonpollutantlistdictionaries = json_pollutantlist[u'concepts']
+
+listofpollutants = {}
+for pollutant in jsonpollutantlistdictionaries:
+    statID = pollutant['@id']
+    pollutantname = pollutant[u'prefLabel'][0]['@value']
+    listofpollutants.update ({statID:pollutantname})
+
 
 ID=(ClosestStationKeys)
 
-stationdata = {}
+listofstationsdata = []
 
 for i in ID:
     url = ('https://uk-air.defra.gov.uk/sos-ukair/api/v1/stations/'+str(i))
@@ -98,6 +112,10 @@ for i in ID:
     first_timeseries = station_time_series[timeseries_keys[0]]
     offering_id = first_timeseries[u'offering'][u'id']
     first_timeserieskey = getValidTimeseriesKey(timeseries_keys, offering_id)
+    station_pollutant = first_timeseries[u'category'][u'id']
+    station_ID = first_timeseries[u'feature'][u'id']
+    StationName = PlaceName
+    PollutantName = listofpollutants.get(station_pollutant)
     url2getdata = ('https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/'+str(first_timeserieskey) +'/getData')
 
     request_time_series_data = Request(url2getdata)
@@ -107,26 +125,6 @@ for i in ID:
     except URLError, e:
         print 'error:', e
 
-    stationdata.update({first_timeserieskey: time_series_data})
+    listofstationsdata.append((StationName, PollutantName, time_series_data))
 
-
-# for s in tweetslookup:
-#     for i in searchstrings:
-#         if i == s.text:
-#             sn.user.screen_name
-#             reply = "@%s The air pollution now is: " % (sn)
-#             s = api.update_status(reply)
-#
-#
-# for s in tweetslookup
-#     stopWords = set(stopwords.words('english'))
-#     words = word_tokenise(tweetslookup)
-#     wordsFiltered = []
-#     for w in words:
-#         if w not in stopWords:
-#             wordsFiltered.append(w)
-#
-# for words in wordsFiltered:
-
-    #fuzzywuzzy words in list to find words closest match to words in csv
-    #tweet data from that
+print listofstationsdata

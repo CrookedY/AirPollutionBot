@@ -10,6 +10,7 @@ from geopy.geocoders import Nominatim
 from geopy.distance import vincenty
 from urllib2 import Request, urlopen, URLError
 import json
+from airpoldata import whichresult, highorlowp2, highorlowNOX, higholowP10
 
 geolocator = Nominatim()
 
@@ -20,9 +21,33 @@ def getValidTimeseriesKey(timerseries_keys, offering_id):
 	else:
 		return timeseries_keys[0]
 
+def pollutionlevel(pollutionresults):
+	if 'high' in pollutionresults:
+		return 'high'
+	if 'medium' in pollutionresults and 'high' not in pollutionresults:
+		return 'medium'
+	else:
+		return 'low'
 
-auth = tweepy.OAuthHandler('', '')
-auth.set_access_token('', '')
+requestpoll = Request ('http://dd.eionet.europa.eu/vocabulary/aq/pollutant/json')
+try:
+    response = urlopen(requestpoll)
+    pollutant_prop = response.read()
+except URLError, e:
+    print 'error:', e
+
+json_pollutantlist = json.loads(pollutant_prop)
+jsonpollutantlistdictionaries = json_pollutantlist[u'concepts']
+
+listofpollutants = {}
+for pollutant in jsonpollutantlistdictionaries:
+    statID = pollutant['@id']
+    pollutantname = pollutant[u'prefLabel'][0]['@value']
+    listofpollutants.update ({statID:pollutantname})
+
+
+auth = tweepy.OAuthHandler('wA4BLtKEtSEwYZpBo3nU7swL8', 'VydrPUsMcgwbWkdVoktm5MfaZcmle8j72aO7wdF03RW50vkBbv')
+auth.set_access_token('892859700819091456-IoQMfI4Bbk5E7vvNXwt8SWghl9buIq2', 'Pvd8X5lHes4mTeHsGPvaZdk1GxZ18L9WOUpoQBicKh7W0')
 api = tweepy.API(auth)
 
 
@@ -39,10 +64,12 @@ tweetslookup = api.search(q="Sheffield Air Pollution")
 
 ListofStationCoordinates = finallist.loc[ : , "latandlong"]
 
+
 for i in tweetslookup:
     reply_to = i.user.screen_name
     place = GeoText(i.text)
     PlaceName = place.cities
+    listofstationsdata = []
     if len(PlaceName)==1:
         location = json.dumps(PlaceName).translate(None, string.punctuation)
         tweetedLocation = geolocator.geocode(location, timeout = None)
@@ -58,29 +85,9 @@ for i in tweetslookup:
                 ClosestStation = finallist[finallist.latandlong.isin([shortest_distance_coordinates])]
                 #print(ClosestStation)
                 ClosestStationKeys = (ClosestStation.loc[:, "ID"])
-                #print (ClosestStationKeys)
+                print (ClosestStationKeys)
                 ####################################################################################
-                requestpoll = Request ('http://dd.eionet.europa.eu/vocabulary/aq/pollutant/json')
-                try:
-                    response = urlopen(requestpoll)
-                    pollutant_prop = response.read()
-                except URLError, e:
-                    print 'error:', e
-
-                json_pollutantlist = json.loads(pollutant_prop)
-                jsonpollutantlistdictionaries = json_pollutantlist[u'concepts']
-                #######################################################################
-
-                listofpollutants = {}
-                for pollutant in jsonpollutantlistdictionaries:
-                    statID = pollutant['@id']
-                    pollutantname = pollutant[u'prefLabel'][0]['@value']
-                    listofpollutants.update ({statID:pollutantname})
-
-                ###############################################################
                 ID=(ClosestStationKeys)
-                listofstationsdata = []
-#
                 for i in ID:
                     url = ('https://uk-air.defra.gov.uk/sos-ukair/api/v1/stations/'+str(i))
                     request2 = Request (url)
@@ -100,15 +107,15 @@ for i in tweetslookup:
                     station_ID = first_timeseries[u'feature'][u'id']
                     StationName = PlaceName
                     PollutantName = listofpollutants.get(station_pollutant)
-                    url2getdata = ('https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/'+str(first_timeserieskey) +'/getData')
+                    if first_timeseries[u'category'][u'id'] == '9' or first_timeseries[u'category'][u'id'] == '6001' or first_timeseries[u'category'][u'id'] == '5':
+                        url2getdata = ('https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/'+str(first_timeserieskey) +'/getData')
 
-                    request_time_series_data = Request(url2getdata)
-                    try:
-                    	response = urlopen(request_time_series_data)
-                    	time_series_data = response.read()
-                    except URLError, e:
-                        print 'error:', e
+                        request_time_series_data = Request(url2getdata)
+                        try:
+                        	response = urlopen(request_time_series_data)
+                        	time_series_data = response.read()
 
-                    listofstationsdata.append((StationName, PollutantName, time_series_data))
+                        except URLError, e:
+                            print 'error:', e
 
-                #reply_status = ('@'+'
+                        listofstationsdata.append((StationName, PollutantName, time_series_data))

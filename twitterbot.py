@@ -2,7 +2,7 @@
 
 import tweepy
 import os
-from airpoldata import NOX, P2, highorlow
+from airpoldata import NOX, P2, highorlow, highorlowNOX, highorlowp2
 
 #this script runs the twitterbot
 auth = tweepy.OAuthHandler(os.environ['CONSUMER_KEY'], os.environ['CONSUMER_SECRET'])
@@ -12,9 +12,9 @@ api = tweepy.API(auth)
 
 
 
-airnow = ('The #airpollution now is '+ (highorlow()) + '. Particulate matter <2.5 um = ' + str(P2)+ u'µg/m³, Nitrous oxides concentration = ' + str(NOX) + u'µg/m³')
-if os.environ.get("DEBUG"):
-  print (airnow)
+airnow = ('The #airpollution now is '+ (highorlow(highorlowNOX(NOX), highorlowp2(P2))) + '. Particulate matter <2.5 um = ' + str(P2)+ u'µg/m³, Nitrous oxides concentration = ' + str(NOX) + u'µg/m³')
+#if os.environ.get("DEBUG"):
+# print (airnow)
 
 
 

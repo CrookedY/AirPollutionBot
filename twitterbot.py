@@ -13,8 +13,8 @@ api = tweepy.API(auth)
 
 
 airnow = ('The #airpollution now is '+ (highorlow(highorlowNOX(NOX), highorlowp2(P2))) + '. Particulate matter <2.5 um = ' + str(P2)+ u'µg/m³, Nitrous oxides concentration = ' + str(NOX) + u'µg/m³')
-#if os.environ.get("DEBUG"):
-# print (airnow)
+if os.environ.get("DEBUG"):
+    print (airnow)
 
 
 

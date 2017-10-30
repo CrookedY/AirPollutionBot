@@ -24,6 +24,5 @@ Note: you must rebuild the image if you have made code changes!
 Step 3 - Host the code at https://hub.docker.com/r/hannahs662/airpollutionbot/
   + use the docker image to run the code
   + pull it from docker `docker pull hannahs662/airpollutionbot`
-
-# TODO:
+  
 Step 4 - set the docker image up to run on a schedule

@@ -25,7 +25,7 @@ P2 = whichresult(p2result)
 if os.environ.get("DEBUG"):
   print whichresult()
 
-def highorlowp2():
+def highorlowp2(P2):
 	if P2<=35:
 		return 'low'
 	elif P2>=54:
@@ -36,7 +36,7 @@ def highorlowp2():
 if os.environ.get("DEBUG"):
 	print highorlow()
 
-def highorlowNOX():
+def highorlowNOX(NOX):
 	if NOX<=200:
 		return 'low'
 	elif NOX>=400:
@@ -44,8 +44,16 @@ def highorlowNOX():
 	else:
 		return 'medium'
 
-def highorlow():
-	if highorlowNOX() =='high' or highorlowp2() == 'high':
+def higholowP10(P10):
+	if P10 <=50:
+		return 'low'
+	elif p10>=83:
+		return 'high'
+	else:
+		return 'medium'
+
+def highorlow(highorlowNOX, highorlowp2):
+	if highorlowNOX =='high' or highorlowp2 == 'high':
 		return 'high'
 	elif highorlowNOX =='medium' or highorlowp2 =='medium':
 		return 'medium'

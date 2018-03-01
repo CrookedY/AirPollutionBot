@@ -1,1 +1,4 @@
 Tweepy==3.5
+geopy
+GeoText
+pandas

@@ -12,7 +12,7 @@ except URLError, e:
 
 stations= json.loads (data)
 
-# print(data)
+
 
 listofstations = []
 for i in stations:
@@ -22,11 +22,10 @@ for i in stations:
 	longitude = (i[u'geometry'][u'coordinates'][1])
 	listofstations.append ((statID,name, (latitude, longitude)))
 
-#print(listofstations)
 
 
 finallist=pandas.DataFrame(listofstations, columns = ('ID', 'station', 'latandlong'))
 
-#print finallist
+
 
 #finallist.to_csv('liststations.csv', sep=',', encoding = 'utf-8')

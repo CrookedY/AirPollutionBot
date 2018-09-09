@@ -1,7 +1,7 @@
 # AirPollutionBot
 tweets air pollution data for sheffield city centre
 
-Now replies. Tweet @shefairpol with '@shefairpol what's the air pollution in x'
+Now replies. Tweet @shefairpol with '@shefairpol what's the air pollution in x' (not twitter live)
 
 # Development
 hack on the python, make it do what you want
